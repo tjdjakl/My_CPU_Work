@@ -14,7 +14,8 @@
 //                 - could experience some time delay or reading information too early, in this case, 
 //                   see what can be changed with the way we do the x-y coordinate math to account for timing error
 //                 - after the timing errors have been resolved, the VGA should be use-ready
-
+//
+// Bruh what the fuuuuuuck
 
 
 
