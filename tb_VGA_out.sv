@@ -283,6 +283,64 @@ module tb_VGA_out();
 
         integer j;
 
+        // TESTING FOR V SYNC STATE
+        for (j=1; j<2; j++) begin
+            for (i=0; i<800; i++) begin end // Clock cycles to produce a horizontal line
+            tb_v_count_exp = j;
+            check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp);
+        end
+
+        @(posedge tb_clk);
+        tb_v_count_exp = 0;
+        check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp);
+
+        // TESTING FOR V FRONTPORCH STATE
+        for (j=0; j<33; j++) begin
+            for (i=0; i<800; i++) begin end // Clock cycles to produce a horizontal line
+            tb_v_count_exp = j;
+            check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp);
+        end
+
+        @(posedge tb_clk);
+        tb_v_count_exp = 0;
+        check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp);
+
+        
+        //////////////////////////////////////////////////
+        // Test 3: Test for accurate pixel data output  //
+        //////////////////////////////////////////////////
+
+
+        // TESTING FOR V ACTIVE STATE
+        for (j=1; j<480; j++) begin
+            for (i=0; i<800; i++) begin end // Clock cycles to produce a horizontal line
+            tb_v_count_exp = j;
+                if (i<144) begin
+                    tb_pixel_data_exp = 0;
+                end else if (i<784) begin
+                    tb_pixel_data_exp = 1;
+                end else begin
+                    tb_pixel_data_exp = 0;
+                end
+            check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp);
+        end
+        
+
+        @(posedge tb_clk);
+        tb_v_count_exp = 0;
+        check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp);
+
+        // TESTING FOR V BACKPORCH STATE
+        for (j=1; j<10; j++) begin
+            for (i=0; i<800; i++) begin end // Clock cycles to produce a horizontal line
+            tb_v_count_exp = j;
+            check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp);
+        end
+
+        @(posedge tb_clk);
+        tb_v_count_exp = 0;
+        check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp);
+
         $finish;
     end
 
