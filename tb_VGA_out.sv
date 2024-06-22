@@ -8,8 +8,8 @@
 
 
 // PLAN OF ACTION: - set up all the correct inputs/outputs for the test bench : COMPLETE
-//                   (including the memory. Ask Dhruv about 'text file to memory') : 
-//                 - set up the proper timing blocks, testing that a state change occurs exactly when we want it to for both HSYNC and VSYNC signal
+//                   (including the memory. Ask Dhruv about 'text file to memory') : COMPLETE
+//                 - set up the proper timing blocks, testing that a state change occurs exactly when we want it to for both HSYNC and VSYNC signal : CURRENT TASK
 //                 - Make sure that data is only ever sent when both signals are in the active state
 //                 - If this true for an idle high data output, then change values in memory and see if the output is what we want
 //                 - could experience some time delay or reading information too early, in this case, 
@@ -52,6 +52,10 @@ module tb_VGA_out();
     logic tb_v_out;
     logic tb_pixel_data;
     logic tb_data_en;
+    logic tb_h_count;
+    logic tb_v_count;
+    logic tb_h_state;
+    logic tb_v_state;
 
     // Expected values for checks
     logic tb_data_en_exp; 
@@ -60,12 +64,26 @@ module tb_VGA_out();
     logic tb_v_out_exp;
     logic tb_VGA_state_exp;
     logic tb_word_address_dest_exp;
+    logic tb_h_count_exp;
+    logic tb_v_count_exp;
+    logic tb_h_state_exp;
+    logic tb_v_state_exp;
 
     // Signal Dump
     initial begin
         $dumpfile ("dump.vcd");
         $dumpvars;
     end
+
+    // 384 32-bit registers
+    logic [31:0] memory [0:383];
+
+    // Initialize the memory using $readmemb
+    initial begin
+        $readmemb("memory_init.txt", memory);
+    end
+        // How it will be used -->           pixel_data <= memory[mem_index][hbit];
+
 
     ////////////////////////
     // Testbenching tasks //
@@ -92,19 +110,31 @@ module tb_VGA_out();
     
     // Check output values against expected values
     task check_outputs;
-        input logic exp_count; 
-        input logic exp_at_max; 
+        input logic tb_pixel_data_exp; 
+        input logic tb_VGA_state_exp; 
+        input logic tb_h_count_exp;
+        input logic tb_v_count_exp;
     begin
         @(negedge tb_clk);  // Check away from the clock edge!
-        if(exp_count == tb_count)
-            $info("Correct tb_count value.");  
+        if(tb_pixel_data_exp == tb_pixel_data)
+            $info("Correct pixel data value.");  
         else
-            $error("Incorrect tb_count value. Actual: %0d, Expected: %0d.", tb_count, exp_count);
+            $error("Incorrect pixel data value. Actual: %0d, Expected: %0d.", tb_pixel_data, tb_pixel_data_exp);
         
-        if(exp_at_max == tb_at_max)
-            $info("Correct tb_at_max value.");
+        if(tb_VGA_state_exp == tb_VGA_state)
+            $info("Correct VGA State value.");
         else
-            $error("Incorrect tb_at_max value. Actual: %0d, Expected: %0d.", tb_at_max, exp_at_max);
+            $error("Incorrect VGA State value. Actual: %0d, Expected: %0d.", tb_VGA_state, tb_VGA_state_exp);
+
+        if(tb_h_count_exp == tb_h_count)
+            $info("Correct H Count value.");  
+        else
+            $error("Incorrect H Count value. Actual: %0d, Expected: %0d.", tb_h_count, tb_h_count_exp);
+
+        if(tb_v_count_exp == tb_v_count)
+            $info("Correct V Count value.");  
+        else
+            $error("Incorrect V Count value. Actual: %0d, Expected: %0d.", tb_v_count, tb_v_count_exp);
 
     end
     endtask 
@@ -115,15 +145,22 @@ module tb_VGA_out();
 
     // DUT Instance
     VGA_out DUT (
-    .SRAM_data_in(),
-    .SRAM_busy(),
-    .clk(), .nrst(),
-    .data_en(), // Can be used for the read 
-    .h_out(), .v_out(), .pixel_data(),
-    .word_address_dest(),
-    .byte_select(),
-    .VGA_state()
+    .SRAM_data_in(tb_SRAM_data_in),
+    .SRAM_busy(tb_SRAM_busy),
+    .clk(tb_clk), .nrst(tb_nrst),
+    .data_en(tb_data_en), // Can be used for the read 
+    .h_out(tb_h_out), .v_out(tb_v_out), .pixel_data(tb_pixel_data),
+    .word_address_dest(tb_word_address_dest),
+    .byte_select(tb_byte_select),
+    .VGA_state(tb_VGA_state),
+    .h_count(tb_h_count),
+    .v_count(tb_v_count),
+    .h_state(tb_h_state),
+    .v_state(tb_v_state)
     );
+
+    // Connecting wires to external memory 
+    tb_SRAM_data_in = memory[tb_word_address_dest[8:0]];
 
     // Clock generation block
     always begin
@@ -139,10 +176,8 @@ module tb_VGA_out();
         tb_test_num = -1;  // We haven't started testing yet
         tb_test_name = "Test Bench Initialization";
         tb_nrst = RESET_INACTIVE;
-        tb_enable = 0;
-        tb_clear = 0;
-        tb_wrap = 0;
-        tb_max = 0;
+        tb_SRAM_data_in = 0;
+        tb_SRAM_busy = 0;
         // Wait some time before starting first test case
         #(0.5);
 
@@ -154,10 +189,7 @@ module tb_VGA_out();
         tb_test_num+=1;
         tb_test_name = "Power on Reset";
         // Set inputs to non-reset values
-        tb_enable = 1;
-        tb_clear = 0;
-        tb_wrap = 1;
-        tb_max = '1;
+        tb_SRAM_busy = 0;
 
         // Activate Reset
         tb_nrst = RESET_ACTIVE;
@@ -165,59 +197,91 @@ module tb_VGA_out();
         #(CLK_PERIOD * 2); // Wait 2 clock periods before proceeding
         
         // Check outputs are reset
-        tb_count_exp = 0; 
-        tb_at_max_exp = 0;
-        check_outputs(tb_count_exp, tb_at_max_exp);
+        tb_h_count_exp = 0; 
+        tb_v_count_Exp = 0;
+        tb_pixel_data_exp = 0;
+        tb_VGA_state_exp = 0;
+        check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp);
 
         // Deactivate Reset
         tb_nrst = RESET_INACTIVE;
 
         // Check outputs again
-        tb_count_exp = 1;  // because enable is high
-        tb_at_max_exp = 0;
-        check_outputs(tb_count_exp, tb_at_max_exp);
+        tb_h_count_exp = 1; 
+        tb_v_count_Exp = 0;
+        tb_pixel_data_exp = 0;
+        tb_VGA_state_exp = 0;
+        check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp);
 
-        //////////////////////////////////////
-        // Test 1: Test Continuous Counting //
-        //////////////////////////////////////
+        //////////////////////////////////////////////////
+        // Test 1: Test H State Change after SYNC count //
+        //////////////////////////////////////////////////
 
         tb_test_num += 1; 
         tb_test_name = "New Test Case";
         reset_dut();
 
-        // Set inputs
-        tb_wrap = 1'b1; 
-        tb_enable = 1'b1;
 
 
-        for (i=0; i<20; i++) begin
+        //TESTING FOR H SYNC STATE
+        for (i=0; i<96; i++) begin
 
             @(posedge tb_clk);
-            check_outputs(tb_count_exp, tb_at_max_exp);
+            tb_h_count_exp = i;
+            check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp);
 
         end
 
-        @(negedge tb_clk);
-        tb_clear = 1;
-        @(negedge tb_clk);
-        tb_clear = 0;
-        check_outputs(tb_count_exp, tb_at_max_exp);
-        tb_wrap = 0;
+        @(posedge tb_clk);
+        tb_h_count_exp = 0;
+        check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp);
 
-        for (i=0; i<20; i++) begin
+        //TESTING FOR H FRONTPORCH STATE
+        for (i=0; i<48; i++) begin
 
-            if ((i < 10) & (i > 5)) begin
-                tb_enable = 0;
-                @(posedge tb_clk);
-                check_outputs(tb_count_exp, tb_at_max_exp);
-            end
-            else begin
-                tb_enable = 1;
-                @(posedge tb_clk);
-                check_outputs(tb_count_exp, tb_at_max_exp);
-            end
+            @(posedge tb_clk);
+            tb_h_count_exp = i;
+            check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp);
 
         end
+
+        @(posedge tb_clk);
+        tb_h_count_exp = 0;
+        check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp);
+
+        //TESTING FOR H ACTIVE STATE
+        for (i=0; i<640; i++) begin
+
+            @(posedge tb_clk);
+            tb_h_count_exp = i;
+            check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp);
+
+        end
+
+        @(posedge tb_clk);
+        tb_h_count_exp = 0;
+        check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp);
+
+        //TESTING FOR H BACKPORCH STATE
+        for (i=0; i<16; i++) begin
+
+            @(posedge tb_clk);
+            tb_h_count_exp = i;
+            check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp);
+
+        end
+
+        @(posedge tb_clk);
+        tb_h_count_exp = 0;
+        tb_h_count_exp = 1;
+        check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp);
+
+
+        //////////////////////////////////////////////////
+        // Test 2: Test V State Change after SYNC count //
+        //////////////////////////////////////////////////
+
+        integer j;
 
         $finish;
     end

@@ -15,18 +15,33 @@ module VGA_out(
     output logic h_out, v_out, pixel_data,
     output logic [31:0] word_address_dest, // 32 bit address line, VGA will only ever use 12 bits
     output logic [3:0] byte_select, // directly tied to the data_en output
-    output logic [1:0] VGA_state // 0 = inactive, 1 = about to be active, 2 = active
+    output logic [1:0] VGA_state, // 0 = inactive, 1 = about to be active, 2 = active
+
+    //OUTPUTS ONLY FOR TEST BENCHING
+    output logic [9:0] h_count,
+    output logic [8:0] v_count,
+    output logic [1:0] h_state,
+    output logic [1:0] v_state
 );
     logic [31:0] word_address_base; // A set value for the base address of the VGA memory information. 
     logic [8:0] word_address_offset; // points to the address range of 0x000 to 0x180
     logic change_state_h, change_state_v, v_count_toggle; 
-    logic [9:0] h_count, h_next_count; // 0 to 640
-    logic [8:0] v_count, v_next_count; // 0 to 480 
+    
+    logic [9:0] h_next_count; // 0 to 640 // FOR TESTBENCHING ONLY /////////////////////////////////////////////
+    logic [8:0] v_next_count; // 0 to 480 // FOR TESTBENCHING ONLY /////////////////////////////////////////////
+   
+//    logic [9:0] h_count, h_next_count; // 0 to 640 // FOR ACTUAL USE /////////////////////////////////////////
+//    logic [8:0] v_count, v_next_count; // 0 to 480 // FOR ACTUAL USE /////////////////////////////////////////
     logic [8:0] h_offset; // h count math for appropriate word address offset
     logic [8:0] v_offset; // v count math for appropriate word address offset
     logic [4:0] x_coord; // address for the 32 bit of information received from SRAM
     
-    assign word_address_base = 32'h3E80; // Word address base
+    //assign word_address_base = 32'h3E80; // Word address base for the actual SRAM
+    assign word_address_base = 32'h0; // Word address base for test benching purposes
+
+    
+    assign h_state = h_mode; // TESTBENCH CASES, REMOVE FOR ACTUAL IMPLEMENTATION///////////////////////////////
+    assign v_state = v_mode; // TESTBENCH CASES, REMOVE FOR ACTUAL IMPLEMENTATION///////////////////////////////
 
     // Enum for H_STATES
     typedef enum logic [1:0] {
@@ -221,7 +236,8 @@ module VGA_out(
 
 
     always_comb begin
-        h_offset = {4'b0000, h_count[4:0]};  // sets h offset to hcount / 32
+    ////////////////////////////////////POTENTIAL FOR ADDING AN ENABLE HERE TO OPTIMIZE/////////////////////////////////////////
+        h_offset = {4'b0000, h_count[4:0]};  // sets h offset to hcount up until 32
         v_offset = 7'd4 * v_count[6:0];            // sets v offset to vcount * 4
         word_address_offset = h_offset + v_offset; // sets word offset to the total of h and v offsets
     end
