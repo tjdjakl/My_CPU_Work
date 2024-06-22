@@ -7,15 +7,14 @@
 `timescale 1ns/1ps
 
 
-// PLAN OF ACTION: - set up all the correct inputs/outputs for the test bench(including the memory. Ask Dhruv about 'text file to memory')
+// PLAN OF ACTION: - set up all the correct inputs/outputs for the test bench : COMPLETE
+//                   (including the memory. Ask Dhruv about 'text file to memory') : 
 //                 - set up the proper timing blocks, testing that a state change occurs exactly when we want it to for both HSYNC and VSYNC signal
 //                 - Make sure that data is only ever sent when both signals are in the active state
 //                 - If this true for an idle high data output, then change values in memory and see if the output is what we want
 //                 - could experience some time delay or reading information too early, in this case, 
 //                   see what can be changed with the way we do the x-y coordinate math to account for timing error
 //                 - after the timing errors have been resolved, the VGA should be use-ready
-//
-// Bruh what the fuuuuuuck
 
 
 
@@ -26,6 +25,9 @@ module tb_VGA_out();
     /////////////////////
     // Testbench Setup //
     /////////////////////
+
+    // Loop variable
+    integer i;
      
     // Define local parameters
     localparam CLK_PERIOD = 40; // 25 MHz 
@@ -39,21 +41,25 @@ module tb_VGA_out();
     // DUT Inputs
     logic tb_clk;
     logic tb_nrst;
-    logic tb_enable;
-    logic tb_clear;
-    logic tb_wrap;
-    logic tb_max;
-
-    integer i;
+    logic tb_SRAM_data_in;
+    logic tb_SRAM_busy;
 
     // DUT Outputs
-    logic tb_count;
-    logic tb_at_max;
+    logic tb_word_address_dest;
+    logic tb_byte_select;
+    logic tb_VGA_state;
+    logic tb_h_out;
+    logic tb_v_out;
+    logic tb_pixel_data;
+    logic tb_data_en;
 
     // Expected values for checks
-    logic tb_count_exp; 
-    logic tb_at_max_exp; 
-
+    logic tb_data_en_exp; 
+    logic tb_pixel_data_exp; 
+    logic tb_h_out_exp;
+    logic tb_v_out_exp;
+    logic tb_VGA_state_exp;
+    logic tb_word_address_dest_exp;
 
     // Signal Dump
     initial begin
