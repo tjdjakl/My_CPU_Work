@@ -200,10 +200,17 @@ module UART_Receiver #(
   output logic [7:0] data_out,
   output logic data_ready, //flag is set to false only if data is being loaded into it
 
-  output logic [6:0] working_data, //NOTE TO SELF: move back inside module
-  output logic [2:0] bits_received, //NOTE TO SELF: move back inside module
+  output logic [8:0] working_data, //NOTE TO SELF: move back inside module    // This needs to be 9 bits long now to include 8 data bits + parity bit
+  output logic [3:0] bits_received, //NOTE TO SELF: move back inside module   // 
   output logic receiving //NOTE TO SELF: move back inside module
 );
+
+  //
+  //
+  //  parity_error <= (^rx_shift[8:1]) != rx_shift[9]; // Parity error is high if the XOR of data_out
+  //  parity error will affect data_ready and not allow data to be sent
+  //  
+  //
   
   //logic [6:0] working_data;
   //logic receiving;
@@ -211,6 +218,7 @@ module UART_Receiver #(
   // logic push_working_data;
   BAUD_counter_state_t BAUD_counter_state;
   logic [15:0] BAUD_counter; //NOTE TO SELF: figure out if this is an appropriate bus size
+  logic parity_error;
 
   always_ff @( posedge clk, negedge nRst ) begin //BAUD counter
     if (~nRst) begin
@@ -224,12 +232,14 @@ module UART_Receiver #(
     end
   end
 
+  assign parity_error = ((^rx_shift[8:1]) != rx_shift[9]); // May not work idk, we will see when we try and run it. However, this is the accurate logic info for parity error
+
   always_ff @( posedge clk, negedge nRst ) begin //data loader
     if (~nRst) begin //reset
       data_out <= 8'b0;
-      working_data <= 7'b0;
+      working_data <= 9'b0;
       receiving <= 1'b0;
-      bits_received <= 3'b0;
+      bits_received <= 4'b0;
       data_ready <= 1'b0;
       BAUD_counter_state <= RESET;
 
@@ -240,20 +250,32 @@ module UART_Receiver #(
         if (receiving) begin
           
           if(BAUD_counter == CYCLES_PER_BIT) begin //wait till clock cycle sync up with BAUD rate 
-            
-            if (bits_received == 3'd7) begin //last bit received, send data out
+
+            if (bits_received == 4'd9) begin //last bit received, send data out
               
-              data_out <= {working_data, Rx};
-              working_data <= 7'b0;
-              receiving <= 1'b0;
-              bits_received <= 3'b0;
-              data_ready <= 1'b0;
-              BAUD_counter_state <= RESET; 
+              if (~parity_error) begin
+                data_out <= working_data[8:1]; // CHANGED TO THIS IN ORDER TO SEND OUT OUR 8 BITS OF USABLE DATA
+                working_data <= working_data;  // I HAVE MY CONCERNS ON WHETHER OR NOT THIS IS PLAUSIBLE, CONSIDERING DATA_OUT IS ALSO BEING SET TO WORKING_DATA
+                                       // I suggest leaving it as is and letting the reset state have its way with the working data
+                receiving <= 1'b0;
+                bits_received <= 4'b0;
+                data_ready <= 1'b0;
+                BAUD_counter_state <= RESET; 
+
+              end else begin
+                data_out <= data_out; // CHANGED TO THIS IN ORDER TO SEND OUT OUR 8 BITS OF USABLE DATA
+                working_data <= 9'b0;
+                receiving <= 1'b0;
+                bits_received <= 4'b0;
+                data_ready <= 1'b0;
+                BAUD_counter_state <= RESET; 
+              end
+
 
             end else begin //not enough bits received 
               
               data_out <= data_out;
-              working_data <= {working_data[5:0], Rx};
+              working_data <= {working_data[7:0], Rx};
               receiving <= 1'b1;
               bits_received <= (bits_received + 1);
               data_ready <= 1'b1;
