@@ -300,6 +300,15 @@ module tb_UART_Reciever();
             check_outputs(tb_working_data_exp, tb_bits_received_exp, tb_receiving_exp, tb_data_out_exp, tb_data_ready_exp);
         end
 
+        // Returning Rx to IDLE state
+        for (i=0; i<5208; i++) begin
+            @(posedge tb_clk);
+            if (i==2604) begin
+                tb_Rx = 1;
+            end
+            check_outputs(tb_working_data_exp, tb_bits_received_exp, tb_receiving_exp, tb_data_out_exp, tb_data_ready_exp);
+        end
+
 
         //TESTING FOR RETURN TO IDLE STATE
         for (i=0; i<9600; i++) begin
