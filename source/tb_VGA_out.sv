@@ -309,6 +309,7 @@ module tb_VGA_out();
         // TESTING FOR V SYNC STATE
         for (j=1; j<2; j++) begin
             for (i=0; i<800; i++) begin end // Clock cycles to produce a horizontal line
+            @(posedge tb_clk);
             tb_v_count_exp = j[8:0];
             check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp, tb_h_state_exp, tb_v_state_exp);
         end
@@ -320,6 +321,7 @@ module tb_VGA_out();
         // TESTING FOR V FRONTPORCH STATE
         for (j=0; j<33; j++) begin
             for (i=0; i<800; i++) begin end // Clock cycles to produce a horizontal line
+            @(posedge tb_clk);
             tb_v_count_exp = j[8:0];
             check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp, tb_h_state_exp, tb_v_state_exp);
         end
@@ -337,6 +339,7 @@ module tb_VGA_out();
         // TESTING FOR V ACTIVE STATE
         for (j=1; j<480; j++) begin
             for (i=0; i<800; i++) begin end // Clock cycles to produce a horizontal line
+            @(posedge tb_clk);
             tb_v_count_exp = j[8:0];
                 if (i<144) begin
                     tb_pixel_data_exp = 0;
@@ -356,6 +359,7 @@ module tb_VGA_out();
         // TESTING FOR V BACKPORCH STATE
         for (j=1; j<10; j++) begin
             for (i=0; i<800; i++) begin end // Clock cycles to produce a horizontal line
+            @(posedge tb_clk);
             tb_v_count_exp = j[8:0];
             check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp, tb_h_state_exp, tb_v_state_exp);
         end
