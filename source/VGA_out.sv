@@ -92,7 +92,7 @@ module VGA_out(
 
         // Changes the VGA_State signal to notify 'Request Handler' the current active state of the VGA
     always_comb begin
-        if (v_current_state == v_active) begin
+        if ((v_current_state == v_active) & (v_count < 96)) begin
             VGA_state = 2'b10;
         end else if ((v_current_state == v_backporch) & (v_count == 9'd32)) begin
             VGA_state = 2'b01;
