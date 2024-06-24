@@ -124,7 +124,7 @@ module tb_UART_Reciever();
 
     // DUT Instance
     UART_Receiver #(.BAUD_RATE(9600), .CLOCK_FREQ(50000000)) UART(
-    .nRst(~tb_nrst),
+    .nRst(tb_nrst),
     .clk(tb_clk),
     .enable(1'b1),
     .Rx(tb_Rx),
