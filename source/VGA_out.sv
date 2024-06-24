@@ -18,12 +18,14 @@
 //
 //
 // if (word_address_offset == 0) begin
-//      word_address_dest
-//      next_word = SRAM_data_in
+//      word_address_dest = h_offset + v_offset;
+//      if (~SRAM_busy)
+//          next_word = SRAM_data_in
 //
 // else if ((x_coord == 5'b11111) & (word_address_offset < #MAXOFFSET#)) begin
-//      word_address_dest + 1
-//      next_word = SRAM_data_in
+//      word_address_dest = h_offset + v_offset + 1;
+//      if (~SRAM_busy)
+//          next_word = SRAM_data_in
 //
 //if (x_coord == 5'b0) begin
 //      current_word = next_word
