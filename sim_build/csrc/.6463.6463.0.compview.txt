@@ -1,0 +1,9 @@
+{"vcs1":{"timestamp_begin":1719257317.243745322, "rt":1.99, "ut":0.19, "st":0.18}}
+{"vcselab":{"timestamp_begin":1719257319.317911024, "rt":1.88, "ut":0.22, "st":0.16}}
+{"link":{"timestamp_begin":1719257321.256048479, "rt":0.12, "ut":0.06, "st":0.04}}
+{"SNPS_VCS_INTERNAL_ROOT_START_TIME": 1719257316.938305606}
+{"VCS_COMP_START_TIME": 1719257316.938305606}
+{"VCS_COMP_END_TIME": 1719257321.503386251}
+{"VCS_USER_OPTIONS": "-sverilog -lca -debug_access+all -Mdir=sim_build/csrc -o sim_build/simv source/tb_UART_Receiver.sv source/UART_Receiver.sv"}
+{"vcs1": {"peak_mem": 383580}}
+{"vcselab": {"peak_mem": 253676}}

@@ -1,0 +1,117 @@
+0
+31
++itf+/apps/share64/rocky8/synopsys/synopsys-202312/vcs/V-2023.12-SP1-1/linux64/lib/vcsdp_lite.tab
++vcsd1
++vpi
+-Mamsrun=
+-Masflags=
+-Mcc=gcc
+-Mcfl= -pipe -O -I/apps/share64/rocky8/synopsys/synopsys-202312/vcs/V-2023.12-SP1-1/include
+-Mcplusplus=g++
+-Mcrt0=
+-Mcrtn=
+-Mcsrc=
+-Mdir=sim_build/csrc
+-Mexternalobj=
+-Mldflags= -rdynamic
+-Mobjects= /apps/share64/rocky8/synopsys/synopsys-202312/vcs/V-2023.12-SP1-1/linux64/lib/libvirsim.so /apps/share64/rocky8/synopsys/synopsys-202312/vcs/V-2023.12-SP1-1/linux64/lib/liberrorinf.so /apps/share64/rocky8/synopsys/synopsys-202312/vcs/V-2023.12-SP1-1/linux64/lib/libsnpsmalloc.so /apps/share64/rocky8/synopsys/synopsys-202312/vcs/V-2023.12-SP1-1/linux64/lib/libvfs.so
+-Mout=sim_build/simv
+-Msaverestoreobj=/apps/share64/rocky8/synopsys/synopsys-202312/vcs/V-2023.12-SP1-1/linux64/lib/vcs_save_restore_new.o
+-Msyslibs=-ldl
+-Mvcsaceobjs=
+-Mxcflags= -pipe -I/apps/share64/rocky8/synopsys/synopsys-202312/vcs/V-2023.12-SP1-1/include
+-Mxllcflags=
+-debug_access+all
+-gen_obj
+-lca
+-o sim_build/simv
+-picarchive
+-sverilog
+/apps/share64/rocky8/synopsys/synopsys-202312/vcs/V-2023.12-SP1-1/linux64/bin/vcs1
+sim_build/simv
+source/tb_UART_Receiver.sv
+source/UART_Receiver.sv
+70
+which_declare=declare -f
+XTERM_VERSION=XTerm(331)
+XTERM_SHELL=/bin/bash
+XTERM_LOCALE=en_US.UTF-8
+VSCODE_GIT_IPC_HANDLE=/tmp/vscode-git-8de098d40b.sock
+VSCODE_GIT_ASKPASS_NODE=/usr/share/code/code
+VSCODE_GIT_ASKPASS_MAIN=/usr/share/code/resources/app/extensions/git/dist/askpass-main.js
+VSCODE_GIT_ASKPASS_EXTRA_ARGS=
+VMR_MODE_FLAG=32
+VCS_STACK_EXEC=true
+VCS_PYTHON3=/apps/share64/rocky8/synopsys/synopsys-202312/vcs/V-2023.12-SP1-1/linux64/bin/Python-3.6.1/bin/python3
+VCS_PATHMAP_PRELOAD_DONE=1
+VCS_MX_HOME_INTERNAL=1
+VCS_LCAMSG_PRINT_OFF=1
+VCS_HOME=/apps/share64/rocky8/synopsys/synopsys-202312/vcs/V-2023.12-SP1-1
+VCS_EXEC_DONE=1
+VCS_DEPTH=0
+VCS_ARG_ADDED_FOR_TMP=1
+VCS_ARCH_OVERRIDE=linux
+VCS_ARCH=linux64
+UNAME=/bin/uname
+TOOL_HOME=/apps/share64/rocky8/synopsys/synopsys-202312/vcs/V-2023.12-SP1-1/linux64
+TOOLDIR=/apps/stars2024/r9
+TIMEOUT=0
+TERM_PROGRAM_VERSION=1.90.1
+TERM_PROGRAM=vscode
+SYNOPSYS_VCS_CHOICE=synopsys-vcsV-2023.12-SP1-1
+SUBMIT_APPLICATION_REVISION=stars2024_r9
+SNPS_VCS_PYTHON3=/apps/share64/rocky8/synopsys/synopsys-202312/vcs/V-2023.12-SP1-1/linux64/bin/Python-3.6.1/bin/python3
+SNPS_VCS_CLANG_PATH=/apps/share64/rocky8/synopsys/synopsys-202312/vcs/V-2023.12-SP1-1/linux64/clang
+SNPS_INTERNAL_VCS_LINUX_OS=linux
+SESSIONDIR=/home/nanohub/tjakl/data/sessions/2429242
+SESSION=2429242
+SCRNAME=vcs
+SCRIPT_NAME=vcs
+RESULTSDIR=/home/nanohub/tjakl/data/results/2429242
+RAPPTURE_POSTERN=lumous
+RAPPTURE_DEBUG=1
+OVA_UUM=0
+ORIGINAL_XDG_CURRENT_DESKTOP=undefined
+NO_AT_BRIDGE=1
+MODULES_RUN_QUARANTINE=LD_LIBRARY_PATH LD_PRELOAD
+MODULES_CMD=/usr/share/Modules/libexec/modulecmd.tcl
+MODULESHOME=/usr/share/Modules
+MODULEPATH_modshare=/usr/share/Modules/modulefiles:2:/etc/modulefiles:2:/usr/share/modulefiles:2
+MODULEPATH=/etc/scl/modulefiles:/etc/scl/modulefiles:/etc/scl/modulefiles:/usr/share/Modules/modulefiles:/etc/modulefiles:/usr/share/modulefiles
+MFLAGS=
+MAKE_TERMOUT=/dev/pts/2
+MAKE_TERMERR=/dev/pts/2
+MAKELEVEL=1
+MAKEFLAGS=
+LOADEDMODULES=
+LESSOPEN=||/usr/bin/lesspipe.sh %s
+LC_ALL=C
+HISTCONTROL=ignoredups
+GIT_ASKPASS=/usr/share/code/resources/app/extensions/git/dist/askpass.sh
+GDK_BACKEND=x11
+FULLSCREEN=yes
+FILEXFER_DEBUG=1
+ENVIRON_CONFIG_DIRS=/etc/environ.d  /apps/share64/rhel8/environ.d
+DEBUGINFOD_URLS=https://debuginfod.centos.org/ 
+DBUS_SESSION_BUS_ADDRESS=disabled:
+COLORTERM=truecolor
+CHROME_DESKTOP=code-url-handler.desktop
+BASH_FUNC_which%%=() {  ( alias;_ eval ${which_declare} ) | /usr/bin/which --tty-only --read-alias --read-functions --show-tilde --show-dot $@_}
+BASH_FUNC_switchml%%=() {  typeset swfound=1;_ if [ "${MODULES_USE_COMPAT_VERSION:-0}" = '1' ]; then_ typeset swname='main';_ if [ -e /usr/share/Modules/libexec/modulecmd.tcl ]; then_ typeset swfound=0;_ unset MODULES_USE_COMPAT_VERSION;_ fi;_ else_ typeset swname='compatibility';_ if [ -e /usr/share/Modules/libexec/modulecmd-compat ]; then_ typeset swfound=0;_ MODULES_USE_COMPAT_VERSION=1;_ export MODULES_USE_COMPAT_VERSION;_ fi;_ fi;_ if [ $swfound -eq 0 ]; then_ echo "Switching to Modules $swname version";_ source /usr/share/Modules/init/bash;_ else_ echo "Cannot switch to Modules $swname version, command not found";_ return 1;_ fi_}
+BASH_FUNC_scl%%=() {  if [ "$1" = "load" -o "$1" = "unload" ]; then_ eval "module $@";_ else_ /usr/bin/scl "$@";_ fi_}
+BASH_FUNC_module%%=() {  _module_raw "$@" 2>&1_}
+BASH_FUNC_ml%%=() {  module ml "$@"_}
+BASH_FUNC__module_raw%%=() {  unset _mlshdbg;_ if [ "${MODULES_SILENT_SHELL_DEBUG:-0}" = '1' ]; then_ case "$-" in _ *v*x*)_ set +vx;_ _mlshdbg='vx'_ ;;_ *v*)_ set +v;_ _mlshdbg='v'_ ;;_ *x*)_ set +x;_ _mlshdbg='x'_ ;;_ *)_ _mlshdbg=''_ ;;_ esac;_ fi;_ unset _mlre _mlIFS;_ if [ -n "${IFS+x}" ]; then_ _mlIFS=$IFS;_ fi;_ IFS=' ';_ for _mlv in ${MODULES_RUN_QUARANTINE:-};_ do_ if [ "${_mlv}" = "${_mlv##*[!A-Za-z0-9_]}" -a "${_mlv}" = "${_mlv#[0-9]}" ]; then_ if [ -n "`eval 'echo ${'$_mlv'+x}'`" ]; then_ _mlre="${_mlre:-}${_mlv}_modquar='`eval 'echo ${'$_mlv'}'`' ";_ fi;_ _mlrv="MODULES_RUNENV_${_mlv}";_ _mlre="${_mlre:-}${_mlv}='`eval 'echo ${'$_mlrv':-}'`' ";_ fi;_ done;_ if [ -n "${_mlre:-}" ]; then_ eval `eval ${_mlre} /usr/bin/tclsh /usr/share/Modules/libexec/modulecmd.tcl bash '"$@"'`;_ else_ eval `/usr/bin/tclsh /usr/share/Modules/libexec/modulecmd.tcl bash "$@"`;_ fi;_ _mlstatus=$?;_ if [ -n "${_mlIFS+x}" ]; then_ IFS=$_mlIFS;_ else_ unset IFS;_ fi;_ unset _mlre _mlv _mlrv _mlIFS;_ if [ -n "${_mlshdbg:-}" ]; then_ set -$_mlshdbg;_ fi;_ unset _mlshdbg;_ return $_mlstatus_}
+0
+0
+3
+1719257257 source/UART_Receiver.sv
+1719257257 source/tb_UART_Receiver.sv
+1714014380 /apps/share64/rocky8/synopsys/synopsys-202312/vcs/V-2023.12-SP1-1/linux64/lib/vcsdp_lite.tab
+4
+1714016057 /apps/share64/rocky8/synopsys/synopsys-202312/vcs/V-2023.12-SP1-1/linux64/lib/libvirsim.so
+1714015330 /apps/share64/rocky8/synopsys/synopsys-202312/vcs/V-2023.12-SP1-1/linux64/lib/liberrorinf.so
+1714015281 /apps/share64/rocky8/synopsys/synopsys-202312/vcs/V-2023.12-SP1-1/linux64/lib/libsnpsmalloc.so
+1714015327 /apps/share64/rocky8/synopsys/synopsys-202312/vcs/V-2023.12-SP1-1/linux64/lib/libvfs.so
+1719257321 sim_build/simv.daidir
+-1 partitionlib
