@@ -200,7 +200,6 @@ module tb_VGA_out();
         tb_test_num = -1;  // We haven't started testing yet
         tb_test_name = "Test Bench Initialization";
         tb_nrst = RESET_INACTIVE;
-        tb_SRAM_data_in = 0;
         tb_SRAM_busy = 0;
         // Wait some time before starting first test case
         #(0.5);
