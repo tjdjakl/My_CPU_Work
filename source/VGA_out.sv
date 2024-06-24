@@ -261,7 +261,7 @@ module VGA_out(
     // setting up X coordinate logic for reading from our SRAM Bytes
     // the first 5 bits just loop after every multiple of 32
     //assign x_coord = h_count[4:0]; // READING FROM RIGHT TO LEFT
-    assign x_coord = {h_count[0], h_count[1], h_count[2], h_count[3], h_count[4]}; // READING FROM RIGHT TO LEFT
+    assign x_coord = 5'b11111 - h_count[4:0]; // READING FROM LEFT TO RIGHT
 
 
     // Correct Pixel data only sends if enable and ~busy flag are toggled
