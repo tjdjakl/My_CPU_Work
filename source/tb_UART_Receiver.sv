@@ -302,9 +302,12 @@ module tb_UART_Reciever();
 
 
         //TESTING FOR RETURN TO IDLE STATE
-        for (i=0; i<16; i++) begin
+        for (i=0; i<9600; i++) begin
+
             @(posedge tb_clk);
+            tb_receiving_exp = 0;
             check_outputs(tb_working_data_exp, tb_bits_received_exp, tb_receiving_exp, tb_data_out_exp, tb_data_ready_exp);
+
         end
 
 
