@@ -81,7 +81,7 @@ module tb_VGA_out();
 
     // Initialize the memory using $readmemb
     initial begin
-        $readmemb("memory_init.txt", memory);
+        $readmemb("{memory_init.txt}\n", memory);
     end
         // How it will be used -->           pixel_data <= memory[mem_index][hbit];
 
