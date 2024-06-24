@@ -233,10 +233,8 @@ module UART_Receiver #(
     end else begin
       if(BAUD_counter_state == RESET | BAUD_counter == CYCLES_PER_BIT) begin //NOTE TO SELF: this may have an extra cycle per bit, but it should be fine i think
         BAUD_counter <= 0;
-        BAUD_counter_state <= COUNTING;
       end else begin
         BAUD_counter <= BAUD_counter+1;
-        BAUD_counter_state <= COUNTING;
       end
     end
   end
@@ -257,6 +255,7 @@ module UART_Receiver #(
       if(enable) begin
 
         if (receiving) begin
+          BAUD_counter_state <= COUNTING; 
           
           if(BAUD_counter == CYCLES_PER_BIT) begin //wait till clock cycle sync up with BAUD rate 
 
