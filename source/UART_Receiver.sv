@@ -236,6 +236,7 @@ module UART_Receiver #(
         BAUD_counter_state <= COUNTING;
       end else begin
         BAUD_counter <= BAUD_counter+1;
+        BAUD_counter_state <= COUNTING;
       end
     end
   end
