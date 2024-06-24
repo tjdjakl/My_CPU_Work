@@ -259,7 +259,7 @@ module UART_Receiver #(
           
           if(BAUD_counter == CYCLES_PER_BIT) begin //wait till clock cycle sync up with BAUD rate 
 
-            if (bits_received == 4'd9) begin //last bit received, send data out
+            if (bits_received == 4'd10) begin //last bit received, send data out
               
               if (~parity_error) begin
                 data_out <= working_data[7:0]; // CHANGED TO THIS IN ORDER TO SEND OUT OUR 8 BITS OF USABLE DATA
@@ -294,7 +294,7 @@ module UART_Receiver #(
             data_out <= data_out;
             working_data <= working_data;
             receiving <= 1'b1;
-            bits_received <= bits_received;
+            bits_received <= bits_received + 1;
             data_ready <= 1'b0;
             BAUD_counter_state <= RESET;
           end
