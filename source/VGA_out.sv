@@ -109,7 +109,7 @@ module VGA_out(
             h_sync: begin
                 h_state = 2'b00; // can be eliminated after tesbenching
                 v_count_toggle = 0;
-                if (h_count < 96) begin
+                if (h_count < 95) begin
                     h_next_count = h_next_count + 1'b1;
                     h_out = 0;
                     h_next_state = h_sync;
@@ -125,7 +125,7 @@ module VGA_out(
                 h_state = 2'b01; // can be eliminated after tesbenching
                 h_out = 1;
                 v_count_toggle = 0;
-                if (h_count < 48) begin
+                if (h_count < 47) begin
                     h_next_count = h_next_count + 1'b1;
                     h_next_state = h_backporch;
                 end else begin
@@ -138,7 +138,7 @@ module VGA_out(
                 h_state = 2'b10; // can be eliminated after tesbenching
                 h_out = 1;
                 v_count_toggle = 0;
-                if (h_count < 640) begin
+                if (h_count < 639) begin
                     h_next_count = h_next_count + 1'b1;
                     h_next_state = h_active;
                 end else begin
@@ -151,7 +151,7 @@ module VGA_out(
             h_frontporch: begin
                 h_state = 2'b11; // can be eliminated after tesbenching
                 h_out = 1;
-                if (h_count < 16) begin
+                if (h_count < 15) begin
                     h_next_count = h_next_count + 1'b1;
                     h_next_state = h_frontporch;
                     v_count_toggle = 0;
