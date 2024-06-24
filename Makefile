@@ -13,11 +13,11 @@ TOP_FILE		:= UART_Reciever.sv
 
 # Specify the name of component or sub-module files
 # (do not include the source folder in the name)
-COMPONENT_FILES	:= memory_init.txt
+COMPONENT_FILES	:= 
 
 # Specify the top level testbench to be simulated
 # (do not include the source folder in the name)
-TB 				:= tb_UART_Reciever.sv
+TB 				:= tb_UART_Receiver.sv
 
 # Directories where source code is located
 SRC 			:= source
