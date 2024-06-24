@@ -299,7 +299,7 @@ module UART_Receiver #(
             working_data <= 9'b0;
             receiving <= 1'b1;
             bits_received <= 4'b0;
-            data_ready <= 1'b1;
+            data_ready <= 1'b0;
             BAUD_counter_state <= COUNTING;
 
           end else begin //no start bit, keep waiting
@@ -308,7 +308,7 @@ module UART_Receiver #(
             working_data <= 9'b0;
             receiving <= 1'b0;
             bits_received <= 4'b0;
-            data_ready <= 1'b1;
+            data_ready <= 1'b0;
             BAUD_counter_state <= RESET;
 
           end
