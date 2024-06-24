@@ -9,7 +9,7 @@ export LD_LIBRARY_PATH := /home/shay/a/ece270/lib:$(LD_LIBRARY_PATH)
 
 # Specify the name of the top level file
 # (do not include the source folder in the name)
-TOP_FILE		:= VGA_out.sv
+TOP_FILE		:= UART_Reciever.sv
 
 # Specify the name of component or sub-module files
 # (do not include the source folder in the name)
@@ -17,7 +17,7 @@ COMPONENT_FILES	:= memory_init.txt
 
 # Specify the top level testbench to be simulated
 # (do not include the source folder in the name)
-TB 				:= tb_VGA_out.sv
+TB 				:= tb_UART_Reciever.sv
 
 # Directories where source code is located
 SRC 			:= source

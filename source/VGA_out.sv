@@ -4,8 +4,11 @@
 
 
 
-// [1:0]CURRENT CLIENT ----- FROM IO CONTROLLER DICTATING WHO HAS ACCESS TO WISHBONE AT A GIVEN TIME. CPU[0]/VGA[1]/UART[2]
-// ADD IN AN OVERALL ENABLE WHEN THE VGA CLIENT IS SELECTED 
+////////////////////////////////////////////////////////////////////////////////////////////////
+//                                                                                            //
+//  ADD IN A PLACEHOLDER REG FILE SO THAT NEW PIXEL DATA IS ON STANDBY AND NO TIMING MISHAP   //
+//                                                                                            //
+////////////////////////////////////////////////////////////////////////////////////////////////
 
 module VGA_out(
     input logic [31:0] SRAM_data_in,

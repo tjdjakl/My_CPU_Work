@@ -47,8 +47,8 @@ module top (
 
   logic [7:0] data_out;
   logic data_ready;
-  logic [6:0] working_data;
-  logic [2:0] bits_received;
+  logic [8:0] working_data;
+  logic [3:0] bits_received;
   logic receiving;
   UART_Receiver #(.BAUD_RATE(100), .CLOCK_FREQ(100)) UART(
     .nRst(~reset),
@@ -232,7 +232,7 @@ module UART_Receiver #(
     end
   end
 
-  assign parity_error = ((^rx_shift[8:1]) != rx_shift[9]); // May not work idk, we will see when we try and run it. However, this is the accurate logic info for parity error
+  assign parity_error = ((^working_data[7:0]) != working_data[8]); // May not work idk, we will see when we try and run it. However, this is the accurate logic info for parity error
 
   always_ff @( posedge clk, negedge nRst ) begin //data loader
     if (~nRst) begin //reset
@@ -254,12 +254,12 @@ module UART_Receiver #(
             if (bits_received == 4'd9) begin //last bit received, send data out
               
               if (~parity_error) begin
-                data_out <= working_data[8:1]; // CHANGED TO THIS IN ORDER TO SEND OUT OUR 8 BITS OF USABLE DATA
+                data_out <= working_data[7:0]; // CHANGED TO THIS IN ORDER TO SEND OUT OUR 8 BITS OF USABLE DATA
                 working_data <= working_data;  // I HAVE MY CONCERNS ON WHETHER OR NOT THIS IS PLAUSIBLE, CONSIDERING DATA_OUT IS ALSO BEING SET TO WORKING_DATA
                                        // I suggest leaving it as is and letting the reset state have its way with the working data
                 receiving <= 1'b0;
                 bits_received <= 4'b0;
-                data_ready <= 1'b0;
+                data_ready <= 1'b1; // Flags that data is ready to transfer
                 BAUD_counter_state <= RESET; 
 
               end else begin
@@ -275,13 +275,20 @@ module UART_Receiver #(
             end else begin //not enough bits received 
               
               data_out <= data_out;
-              working_data <= {working_data[7:0], Rx};
+              working_data <= {Rx, working_data[8:1]};
               receiving <= 1'b1;
               bits_received <= (bits_received + 1);
-              data_ready <= 1'b1;
+              data_ready <= 1'b0;
               BAUD_counter_state <= COUNTING;
             end
 
+          end else if ((BAUD_counter == (CYCLES_PER_BIT/2)) & (bits_received == 0))begin
+            data_out <= data_out;
+            working_data <= working_data;
+            receiving <= 1'b1;
+            bits_received <= bits_received;
+            data_ready <= 1'b0;
+            BAUD_counter_state <= RESET;
           end
 
         end else begin //not receiving any information
@@ -289,18 +296,18 @@ module UART_Receiver #(
           if(Rx == 1'b0) begin //start bit received
 
             data_out <= data_out;
-            working_data <= 7'b0;
+            working_data <= 9'b0;
             receiving <= 1'b1;
-            bits_received <= 3'b0;
+            bits_received <= 4'b0;
             data_ready <= 1'b1;
             BAUD_counter_state <= COUNTING;
 
           end else begin //no start bit, keep waiting
             
             data_out <= data_out;
-            working_data <= 7'b0;
+            working_data <= 9'b0;
             receiving <= 1'b0;
-            bits_received <= 3'b0;
+            bits_received <= 4'b0;
             data_ready <= 1'b1;
             BAUD_counter_state <= RESET;
 
@@ -309,10 +316,10 @@ module UART_Receiver #(
         end
         
       end else begin //if disabled, reset all values
-        data_out <= 8'b0;
-        working_data <= 7'b0;
+        data_out <= 8'b0; // MAYBE WANT TO KEEP DATA OUT AS IS, THAT WAY THE REGISTER INFORMATION ISNT CHANGED BEFORE A NEW INPUT IS GIVEN
+        working_data <= 9'b0;
         receiving <= 1'b0;
-        bits_received <= 3'b0;
+        bits_received <= 4'b0;
         data_ready <= 1'b0;
         BAUD_counter_state <= RESET;
       end
