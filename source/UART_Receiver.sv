@@ -222,6 +222,9 @@ module UART_Receiver #(
   //logic [2:0] bits_received;
   // logic push_working_data;
   BAUD_counter_state_t BAUD_counter_state;
+  //logic [15:0] BAUD_counter, //NOTE TO SELF: figure out if this is an appropriate bus size
+  //logic parity_error                          ADDED TO TOPSET OUTPUT FOR TESTBENCH SAKE, REMOVE COMMENT TOGGLE WHEN ACTUAL IS UPON US
+
   
 
   always_ff @( posedge clk, negedge nRst ) begin //BAUD counter
@@ -230,6 +233,7 @@ module UART_Receiver #(
     end else begin
       if(BAUD_counter_state == RESET | BAUD_counter == CYCLES_PER_BIT) begin //NOTE TO SELF: this may have an extra cycle per bit, but it should be fine i think
         BAUD_counter <= 0;
+        BAUD_counter_state <= COUNTING;
       end else begin
         BAUD_counter <= BAUD_counter+1;
       end
