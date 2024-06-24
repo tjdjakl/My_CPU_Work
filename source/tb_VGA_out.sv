@@ -371,6 +371,17 @@ module tb_VGA_out();
         tb_v_count_exp = 0;
         check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp, tb_h_state_exp, tb_v_state_exp);
 
+        
+        for (i = 0; i < 384; i = i + 1) begin
+            if (i==5) begin
+                memory[i] = 32'hFFFFFFFF;
+            end else if (i < 52) begin
+                memory[i] = 32'h0;
+            end else begin
+                memory[i] = 32'hFFFFFFFF;
+            end
+        end
+        
 
         for (i=0; i<512000; i++) begin @(posedge tb_clk); end // Clock cycles to produce a horizontal line
 
