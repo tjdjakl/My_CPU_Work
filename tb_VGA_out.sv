@@ -28,6 +28,7 @@ module tb_VGA_out();
 
     // Loop variable
     integer i;
+    integer j;
      
     // Define local parameters
     localparam CLK_PERIOD = 40; // 25 MHz 
@@ -41,33 +42,33 @@ module tb_VGA_out();
     // DUT Inputs
     logic tb_clk;
     logic tb_nrst;
-    logic tb_SRAM_data_in;
+    logic [31:0] tb_SRAM_data_in;
     logic tb_SRAM_busy;
 
     // DUT Outputs
-    logic tb_word_address_dest;
-    logic tb_byte_select;
-    logic tb_VGA_state;
+    logic [31:0] tb_word_address_dest;
+    logic [3:0] tb_byte_select;
+    logic [1:0] tb_VGA_state;
     logic tb_h_out;
     logic tb_v_out;
     logic tb_pixel_data;
     logic tb_data_en;
-    logic tb_h_count;
-    logic tb_v_count;
-    logic tb_h_state;
-    logic tb_v_state;
+    logic [9:0] tb_h_count;
+    logic [8:0] tb_v_count;
+    logic [1:0] tb_h_state;
+    logic [1:0] tb_v_state;
 
     // Expected values for checks
     logic tb_data_en_exp; 
     logic tb_pixel_data_exp; 
     logic tb_h_out_exp;
     logic tb_v_out_exp;
-    logic tb_VGA_state_exp;
-    logic tb_word_address_dest_exp;
-    logic tb_h_count_exp;
-    logic tb_v_count_exp;
-    logic tb_h_state_exp;
-    logic tb_v_state_exp;
+    logic [1:0] tb_VGA_state_exp;
+    logic [31:0] tb_word_address_dest_exp;
+    logic [9:0] tb_h_count_exp;
+    logic [8:0] tb_v_count_exp;
+    logic [1:0] tb_h_state_exp;
+    logic [1:0] tb_v_state_exp;
 
     // Signal Dump
     initial begin
@@ -111,9 +112,11 @@ module tb_VGA_out();
     // Check output values against expected values
     task check_outputs;
         input logic tb_pixel_data_exp; 
-        input logic tb_VGA_state_exp; 
-        input logic tb_h_count_exp;
-        input logic tb_v_count_exp;
+        input logic [1:0] tb_VGA_state_exp; 
+        input logic [9:0] tb_h_count_exp;
+        input logic [8:0] tb_v_count_exp;
+        input logic [1:0] tb_h_state_exp;
+        input logic [1:0] tb_v_state_exp;
     begin
         @(negedge tb_clk);  // Check away from the clock edge!
         if(tb_pixel_data_exp == tb_pixel_data)
@@ -136,6 +139,16 @@ module tb_VGA_out();
         else
             $error("Incorrect V Count value. Actual: %0d, Expected: %0d.", tb_v_count, tb_v_count_exp);
 
+        if(tb_h_state_exp == tb_h_state)
+            $info("Correct H State value.");  
+        else
+            $error("Incorrect H State value. Actual: %0d, Expected: %0d.", tb_h_state, tb_h_state_exp);
+
+        if(tb_v_state_exp == tb_v_state)
+            $info("Correct V State value.");  
+        else
+            $error("Incorrect V State value. Actual: %0d, Expected: %0d.", tb_v_state, tb_v_state_exp);
+
     end
     endtask 
 
@@ -147,9 +160,12 @@ module tb_VGA_out();
     VGA_out DUT (
     .SRAM_data_in(tb_SRAM_data_in),
     .SRAM_busy(tb_SRAM_busy),
-    .clk(tb_clk), .nrst(tb_nrst),
+    .clk(tb_clk), 
+    .nrst(tb_nrst),
     .data_en(tb_data_en), // Can be used for the read 
-    .h_out(tb_h_out), .v_out(tb_v_out), .pixel_data(tb_pixel_data),
+    .h_out(tb_h_out), 
+    .v_out(tb_v_out), 
+    .pixel_data(tb_pixel_data),
     .word_address_dest(tb_word_address_dest),
     .byte_select(tb_byte_select),
     .VGA_state(tb_VGA_state),
@@ -160,7 +176,7 @@ module tb_VGA_out();
     );
 
     // Connecting wires to external memory 
-    tb_SRAM_data_in = memory[tb_word_address_dest[8:0]];
+    assign tb_SRAM_data_in = memory[tb_word_address_dest[8:0]];
 
     // Clock generation block
     always begin
@@ -198,20 +214,20 @@ module tb_VGA_out();
         
         // Check outputs are reset
         tb_h_count_exp = 0; 
-        tb_v_count_Exp = 0;
+        tb_v_count_exp = 0;
         tb_pixel_data_exp = 0;
         tb_VGA_state_exp = 0;
-        check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp);
+        check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp, tb_h_state_exp, tb_v_state_exp);
 
         // Deactivate Reset
         tb_nrst = RESET_INACTIVE;
 
         // Check outputs again
         tb_h_count_exp = 1; 
-        tb_v_count_Exp = 0;
+        tb_v_count_exp = 0;
         tb_pixel_data_exp = 0;
         tb_VGA_state_exp = 0;
-        check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp);
+        check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp, tb_h_state_exp, tb_v_state_exp);
 
         //////////////////////////////////////////////////
         // Test 1: Test H State Change after SYNC count //
@@ -227,83 +243,83 @@ module tb_VGA_out();
         for (i=0; i<96; i++) begin
 
             @(posedge tb_clk);
-            tb_h_count_exp = i;
-            check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp);
+            tb_h_count_exp = i[9:0];
+            check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp, tb_h_state_exp, tb_v_state_exp);
 
         end
 
         @(posedge tb_clk);
         tb_h_count_exp = 0;
-        check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp);
+        check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp, tb_h_state_exp, tb_v_state_exp);
 
         //TESTING FOR H FRONTPORCH STATE
         for (i=0; i<48; i++) begin
 
             @(posedge tb_clk);
-            tb_h_count_exp = i;
-            check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp);
+            tb_h_count_exp = i[9:0];
+            check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp, tb_h_state_exp, tb_v_state_exp);
 
         end
 
         @(posedge tb_clk);
         tb_h_count_exp = 0;
-        check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp);
+        check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp, tb_h_state_exp, tb_v_state_exp);
 
         //TESTING FOR H ACTIVE STATE
         for (i=0; i<640; i++) begin
 
             @(posedge tb_clk);
-            tb_h_count_exp = i;
-            check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp);
+            tb_h_count_exp = i[9:0];
+            check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp, tb_h_state_exp, tb_v_state_exp);
 
         end
 
         @(posedge tb_clk);
         tb_h_count_exp = 0;
-        check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp);
+        check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp, tb_h_state_exp, tb_v_state_exp);
 
         //TESTING FOR H BACKPORCH STATE
         for (i=0; i<16; i++) begin
 
             @(posedge tb_clk);
-            tb_h_count_exp = i;
-            check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp);
+            tb_h_count_exp = i[9:0];
+            check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp, tb_h_state_exp, tb_v_state_exp);
 
         end
 
         @(posedge tb_clk);
         tb_h_count_exp = 0;
         tb_h_count_exp = 1;
-        check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp);
+        check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp, tb_h_state_exp, tb_v_state_exp);
 
 
         //////////////////////////////////////////////////
         // Test 2: Test V State Change after SYNC count //
         //////////////////////////////////////////////////
 
-        integer j;
+        
 
         // TESTING FOR V SYNC STATE
         for (j=1; j<2; j++) begin
             for (i=0; i<800; i++) begin end // Clock cycles to produce a horizontal line
-            tb_v_count_exp = j;
-            check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp);
+            tb_v_count_exp = j[8:0];
+            check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp, tb_h_state_exp, tb_v_state_exp);
         end
 
         @(posedge tb_clk);
         tb_v_count_exp = 0;
-        check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp);
+        check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp, tb_h_state_exp, tb_v_state_exp);
 
         // TESTING FOR V FRONTPORCH STATE
         for (j=0; j<33; j++) begin
             for (i=0; i<800; i++) begin end // Clock cycles to produce a horizontal line
-            tb_v_count_exp = j;
-            check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp);
+            tb_v_count_exp = j[8:0];
+            check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp, tb_h_state_exp, tb_v_state_exp);
         end
 
         @(posedge tb_clk);
         tb_v_count_exp = 0;
-        check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp);
+        check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp, tb_h_state_exp, tb_v_state_exp);
 
         
         //////////////////////////////////////////////////
@@ -314,7 +330,7 @@ module tb_VGA_out();
         // TESTING FOR V ACTIVE STATE
         for (j=1; j<480; j++) begin
             for (i=0; i<800; i++) begin end // Clock cycles to produce a horizontal line
-            tb_v_count_exp = j;
+            tb_v_count_exp = j[8:0];
                 if (i<144) begin
                     tb_pixel_data_exp = 0;
                 end else if (i<784) begin
@@ -322,24 +338,24 @@ module tb_VGA_out();
                 end else begin
                     tb_pixel_data_exp = 0;
                 end
-            check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp);
+            check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp, tb_h_state_exp, tb_v_state_exp);
         end
         
 
         @(posedge tb_clk);
         tb_v_count_exp = 0;
-        check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp);
+        check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp, tb_h_state_exp, tb_v_state_exp);
 
         // TESTING FOR V BACKPORCH STATE
         for (j=1; j<10; j++) begin
             for (i=0; i<800; i++) begin end // Clock cycles to produce a horizontal line
-            tb_v_count_exp = j;
-            check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp);
+            tb_v_count_exp = j[8:0];
+            check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp, tb_h_state_exp, tb_v_state_exp);
         end
 
         @(posedge tb_clk);
         tb_v_count_exp = 0;
-        check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp);
+        check_outputs(tb_pixel_data_exp, tb_VGA_state_exp, tb_h_count_exp, tb_v_count_exp, tb_h_state_exp, tb_v_state_exp);
 
         $finish;
     end

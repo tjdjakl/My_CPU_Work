@@ -20,8 +20,8 @@ module VGA_out(
     //OUTPUTS ONLY FOR TEST BENCHING
     output logic [9:0] h_count,
     output logic [8:0] v_count,
-    output logic [1:0] h_state,
-    output logic [1:0] v_state
+    output logic [1:0] h_state, // can be eliminated after test benching
+    output logic [1:0] v_state // can be eliminated after tesbenching
 );
     logic [31:0] word_address_base; // A set value for the base address of the VGA memory information. 
     logic [8:0] word_address_offset; // points to the address range of 0x000 to 0x180
@@ -38,10 +38,6 @@ module VGA_out(
     
     //assign word_address_base = 32'h3E80; // Word address base for the actual SRAM
     assign word_address_base = 32'h0; // Word address base for test benching purposes
-
-    
-    assign h_state = h_mode; // TESTBENCH CASES, REMOVE FOR ACTUAL IMPLEMENTATION///////////////////////////////
-    assign v_state = v_mode; // TESTBENCH CASES, REMOVE FOR ACTUAL IMPLEMENTATION///////////////////////////////
 
     // Enum for H_STATES
     typedef enum logic [1:0] {
@@ -108,6 +104,7 @@ module VGA_out(
         h_next_count = h_count;
         case (h_current_state) 
             h_sync: begin
+                h_state = 2'b00; // can be eliminated after tesbenching
                 v_count_toggle = 0;
                 if (h_count < 96) begin
                     h_next_count = h_next_count + 1'b1;
@@ -122,6 +119,7 @@ module VGA_out(
             
 
             h_backporch: begin
+                h_state = 2'b01; // can be eliminated after tesbenching
                 h_out = 1;
                 v_count_toggle = 0;
                 if (h_count < 48) begin
@@ -134,6 +132,7 @@ module VGA_out(
             end
 
             h_active: begin
+                h_state = 2'b10; // can be eliminated after tesbenching
                 h_out = 1;
                 v_count_toggle = 0;
                 if (h_count < 640) begin
@@ -147,6 +146,7 @@ module VGA_out(
             end
 
             h_frontporch: begin
+                h_state = 2'b11; // can be eliminated after tesbenching
                 h_out = 1;
                 if (h_count < 16) begin
                     h_next_count = h_next_count + 1'b1;
@@ -170,7 +170,8 @@ module VGA_out(
             v_next_count = v_next_count + 1'b1;
         end
         case (v_current_state) 
-            h_sync: begin
+            v_sync: begin
+                v_state = 2'b00; // can be eliminated after tesbenching
                 if (v_count < 2) begin
                     v_out = 0;
                     v_next_state = v_sync;
@@ -182,7 +183,8 @@ module VGA_out(
             end
             
 
-            h_backporch: begin
+            v_backporch: begin
+                v_state = 2'b01; // can be eliminated after tesbenching
                 v_out = 1;
                 if (v_count < 33) begin
                     v_next_state = v_backporch;
@@ -192,7 +194,8 @@ module VGA_out(
                 end
             end
 
-            h_active: begin
+            v_active: begin
+                v_state = 2'b10;// can be eliminated after tesbenching
                 v_out = 1;
                 if (v_count < 480) begin
                     v_next_state = v_active;
@@ -203,7 +206,8 @@ module VGA_out(
 
             end
 
-            h_frontporch: begin
+            v_frontporch: begin
+                v_state = 2'b11;// can be eliminated after tesbenching
                 v_out = 1;
                 if (v_count < 10) begin
                     v_next_state = v_frontporch;
