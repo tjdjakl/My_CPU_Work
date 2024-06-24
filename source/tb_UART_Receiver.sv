@@ -223,7 +223,7 @@ module tb_UART_Reciever();
         for (i=0; i<5208; i++) begin
             @(posedge tb_clk);
             if (i==2604) begin
-                tb_Rx = 0;
+                tb_Rx = 1;
             end
             check_outputs(tb_working_data_exp, tb_bits_received_exp, tb_receiving_exp, tb_data_out_exp, tb_data_ready_exp);
         end
@@ -277,7 +277,7 @@ module tb_UART_Reciever();
         for (i=0; i<5208; i++) begin
             @(posedge tb_clk);
             if (i==2604) begin
-                tb_Rx = 1;
+                tb_Rx = 0;
             end
             check_outputs(tb_working_data_exp, tb_bits_received_exp, tb_receiving_exp, tb_data_out_exp, tb_data_ready_exp);
         end
@@ -295,7 +295,7 @@ module tb_UART_Reciever();
         for (i=0; i<5208; i++) begin
             @(posedge tb_clk);
             if (i==2604) begin
-                tb_Rx = 1;
+                tb_Rx = 0;
             end
             check_outputs(tb_working_data_exp, tb_bits_received_exp, tb_receiving_exp, tb_data_out_exp, tb_data_ready_exp);
         end
