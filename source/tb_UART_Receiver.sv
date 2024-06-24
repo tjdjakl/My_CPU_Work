@@ -218,63 +218,81 @@ module tb_UART_Reciever();
         //TESTING FOR RECIEIVING CORRECT BITS, 1 bit shifted in
         for (i=0; i<5208; i++) begin
             @(posedge tb_clk);
-            tb_Rx = 0;
+            if (i==2604) begin
+                tb_Rx = 0;
+            end
             check_outputs(tb_working_data_exp, tb_bits_received_exp, tb_receiving_exp, tb_data_out_exp, tb_data_ready_exp);
         end
 
         //TESTING FOR RECIEIVING CORRECT BITS, 2 bit shifted in
         for (i=0; i<5208; i++) begin
             @(posedge tb_clk);
-            tb_Rx = 0;
+            if (i==2604) begin
+                tb_Rx = 0;
+            end
             check_outputs(tb_working_data_exp, tb_bits_received_exp, tb_receiving_exp, tb_data_out_exp, tb_data_ready_exp);
         end
 
         //TESTING FOR RECIEIVING CORRECT BITS, 3 bit shifted in
         for (i=0; i<5208; i++) begin
             @(posedge tb_clk);
-            tb_Rx = 0;
+            if (i==2604) begin
+                tb_Rx = 0;
+            end
             check_outputs(tb_working_data_exp, tb_bits_received_exp, tb_receiving_exp, tb_data_out_exp, tb_data_ready_exp);
         end
 
         //TESTING FOR RECIEIVING CORRECT BITS, 4 bit shifted in
         for (i=0; i<5208; i++) begin
             @(posedge tb_clk);
-            tb_Rx = 1;
+            if (i==2604) begin
+                tb_Rx = 0;
+            end
             check_outputs(tb_working_data_exp, tb_bits_received_exp, tb_receiving_exp, tb_data_out_exp, tb_data_ready_exp);
         end
 
         //TESTING FOR RECIEIVING CORRECT BITS, 5 bit shifted in
         for (i=0; i<5208; i++) begin
             @(posedge tb_clk);
-            tb_Rx = 1;
+            if (i==2604) begin
+                tb_Rx = 1;
+            end
             check_outputs(tb_working_data_exp, tb_bits_received_exp, tb_receiving_exp, tb_data_out_exp, tb_data_ready_exp);
         end
 
         //TESTING FOR RECIEIVING CORRECT BITS, 6 bit shifted in
         for (i=0; i<5208; i++) begin
             @(posedge tb_clk);
-            tb_Rx = 1;
+            if (i==2604) begin
+                tb_Rx = 1;
+            end
             check_outputs(tb_working_data_exp, tb_bits_received_exp, tb_receiving_exp, tb_data_out_exp, tb_data_ready_exp);
         end
 
         //TESTING FOR RECIEIVING CORRECT BITS, 7 bit shifted in
         for (i=0; i<5208; i++) begin
             @(posedge tb_clk);
-            tb_Rx = 1;
+            if (i==2604) begin
+                tb_Rx = 1;
+            end
             check_outputs(tb_working_data_exp, tb_bits_received_exp, tb_receiving_exp, tb_data_out_exp, tb_data_ready_exp);
         end
 
         //TESTING FOR RECIEIVING CORRECT BITS, 8 bit shifted in
         for (i=0; i<5208; i++) begin
             @(posedge tb_clk);
-            tb_Rx = 1;
+            if (i==2604) begin
+                tb_Rx = 1;
+            end
             check_outputs(tb_working_data_exp, tb_bits_received_exp, tb_receiving_exp, tb_data_out_exp, tb_data_ready_exp);
         end
 
         //TESTING FOR RECIEIVING CORRECT BITS, parity bit shifted in
         for (i=0; i<5208; i++) begin
             @(posedge tb_clk);
-            tb_Rx = 1;
+            if (i==2604) begin
+                tb_Rx = 1;
+            end
             check_outputs(tb_working_data_exp, tb_bits_received_exp, tb_receiving_exp, tb_data_out_exp, tb_data_ready_exp);
         end
 
