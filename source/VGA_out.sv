@@ -244,7 +244,7 @@ module VGA_out(
 
     always_comb begin
     ////////////////////////////////////POTENTIAL FOR ADDING AN ENABLE HERE TO OPTIMIZE/////////////////////////////////////////
-        h_offset = {2'b0, h_count[6:5], 5'b0};  // sets h offset to hcount up until 32
+        h_offset = {7'b0, h_count[6:5]};  // sets h offset to hcount up until 32
         v_offset = 7'd4 * v_count[6:0];            // sets v offset to vcount * 4
         word_address_offset = h_offset + v_offset; // sets word offset to the total of h and v offsets
     end
