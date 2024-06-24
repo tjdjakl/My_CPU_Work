@@ -9,9 +9,9 @@
 
 // PLAN OF ACTION: - set up all the correct inputs/outputs for the test bench : COMPLETE
 //                   (including the memory. Ask Dhruv about 'text file to memory') : COMPLETE
-//                 - set up the proper timing blocks, testing that a state change occurs exactly when we want it to for both HSYNC and VSYNC signal : CURRENT TASK
-//                 - Make sure that data is only ever sent when both signals are in the active state
-//                 - If this true for an idle high data output, then change values in memory and see if the output is what we want
+//                 - set up the proper timing blocks, testing that a state change occurs exactly when we want it to for both HSYNC and VSYNC signal : COMPLETE
+//                 - Make sure that data is only ever sent when both signals are in the active state : COMPLETE
+//                 - If this true for an idle high data output, then change values in memory and see if the output is what we want : CURRENT TASK
 //                 - could experience some time delay or reading information too early, in this case, 
 //                   see what can be changed with the way we do the x-y coordinate math to account for timing error
 //                 - after the timing errors have been resolved, the VGA should be use-ready
@@ -82,7 +82,11 @@ module tb_VGA_out();
 
     initial begin
         for (i = 0; i < 384; i = i + 1) begin
-            memory[i] = 32'hFFFFFFFF;
+            if ((i & 32'b1) == 0) begin
+                memory[i] = 32'hFFFFFFFF;
+            end else begin
+                memory[i] = 32'b0;
+            end
         end
     end
 
