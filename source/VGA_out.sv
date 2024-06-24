@@ -10,6 +10,24 @@
 //                                                                                            //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+//When x_coord == 5'b11111 , thats when we want to fetch the next register from SRAM and store it in a temp local register that can be called directly after x_coord == 0
+//
+// [31:0] current_word
+// [31:0] next_word
+//
+//
+// if (word_address_offset == 0) begin
+//      word_address_dest
+//      next_word = SRAM_data_in
+//
+// else if ((x_coord == 5'b11111) & (word_address_offset < #MAXOFFSET#)) begin
+//      word_address_dest + 1
+//      next_word = SRAM_data_in
+//
+//if (x_coord == 5'b0) begin
+//      current_word = next_word
+
 module VGA_out(
     input logic [31:0] SRAM_data_in,
     input logic SRAM_busy,
