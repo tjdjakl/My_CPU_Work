@@ -82,10 +82,10 @@ module tb_VGA_out();
 
     initial begin
         for (i = 0; i < 384; i = i + 1) begin
-            if ((i & 32'b1) == 0) begin
-                memory[i] = 32'hAAAAAAAA;
+            if ((i & 32'b10) == 0) begin
+                memory[i] = 32'h02468ACF;
             end else begin
-                memory[i] = 32'h11111111;
+                memory[i] = 32'hFCA86420;
             end
         end
     end
