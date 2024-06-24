@@ -31,7 +31,8 @@ module tb_VGA_out();
     integer j;
      
     // Define local parameters
-    localparam CLK_PERIOD = 40; // 25 MHz 
+ //   localparam CLK_PERIOD = 40; // 25 MHz 
+    localparam CLK_PERIOD = 39.72194638; // 25 MHz 
     localparam RESET_ACTIVE = 0;
     localparam RESET_INACTIVE = 1;
 
