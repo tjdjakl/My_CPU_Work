@@ -47,6 +47,8 @@ module tb_UART_Reciever();
     logic tb_receiving;
     logic [7:0] tb_data_out;
     logic tb_data_ready;    
+    logic [15:0] tb_BAUD_counter; //NOTE TO SELF: figure out if this is an appropriate bus size
+    logic tb_parity_error;
 
     // Expected values for checks
     logic [8:0] tb_working_data_exp;
@@ -133,7 +135,9 @@ module tb_UART_Reciever();
     
     .working_data(tb_working_data),
     .bits_received(tb_bits_received),
-    .receiving(tb_receiving)
+    .receiving(tb_receiving),
+    .BAUD_counter(tb_BAUD_counter), //NOTE TO SELF: figure out if this is an appropriate bus size
+    .parity_error(tb_parity_error)
   );
 //
 

@@ -202,7 +202,12 @@ module UART_Receiver #(
 
   output logic [8:0] working_data, //NOTE TO SELF: move back inside module    // This needs to be 9 bits long now to include 8 data bits + parity bit
   output logic [3:0] bits_received, //NOTE TO SELF: move back inside module   // 
-  output logic receiving //NOTE TO SELF: move back inside module
+  output logic receiving, //NOTE TO SELF: move back inside module
+
+
+  //SET HERE FOR TESTBENCH SAKE//////////////////////////////////
+  output logic [15:0] BAUD_counter, //NOTE TO SELF: figure out if this is an appropriate bus size
+  output logic parity_error
 );
 
   //
@@ -217,8 +222,7 @@ module UART_Receiver #(
   //logic [2:0] bits_received;
   // logic push_working_data;
   BAUD_counter_state_t BAUD_counter_state;
-  logic [15:0] BAUD_counter; //NOTE TO SELF: figure out if this is an appropriate bus size
-  logic parity_error;
+  
 
   always_ff @( posedge clk, negedge nRst ) begin //BAUD counter
     if (~nRst) begin
