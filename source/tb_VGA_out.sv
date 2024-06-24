@@ -79,12 +79,20 @@ module tb_VGA_out();
     // 384 32-bit registers
     logic [31:0] memory [0:383];
 
+    initial begin
+        for (i = 0; i < 384; i = i + 1) begin
+            memory[i] = 32'hFFFFFFFF;
+        end
+    end
+
+
+/*
     // Initialize the memory using $readmemb
     initial begin
         $readmemb("{memory_init.txt}\n", memory);
     end
         // How it will be used -->           pixel_data <= memory[mem_index][hbit];
-
+*/
 
     ////////////////////////
     // Testbenching tasks //
