@@ -2,7 +2,14 @@
 //      VGA Output Module, outputs to VGA and send information to monitor
 //
 
+////////////////////////////////////////////////////////////////////////////////////////////////
+//                                                                                            //
+//   MESS WITH THE X_COORD & OFFSET VALUES TO GET A PICTURE TO GO ACROSS THE ENTIRE SCREEN    //
+//                                                                                            //
+////////////////////////////////////////////////////////////////////////////////////////////////
 
+// x_coord changes every two values (will lose two pixel data points on end bit it should be fine)
+// mess with the v_count index for v_offset so that it changes every 5 lines instead of every line
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 //                                                                                            //
@@ -18,16 +25,16 @@
 //
 //
 // if (word_address_offset == 0) begin
-//      word_address_dest = h_offset + v_offset;
+//      word_address_dest = word_address_base + {23'b0, word_address_offset};
 //      if (~SRAM_busy)
 //          next_word = SRAM_data_in
 //
 // else if ((x_coord == 5'b11111) & (word_address_offset < #MAXOFFSET#)) begin
-//      word_address_dest = h_offset + v_offset + 1;
+//      word_address_dest = word_address_base + {23'b0, word_address_offset} + 1;
 //      if (~SRAM_busy)
 //          next_word = SRAM_data_in
 //
-//if (x_coord == 5'b0) begin
+// if (x_coord == 5'b0) begin
 //      current_word = next_word
 
 module VGA_out(
@@ -77,14 +84,6 @@ module VGA_out(
             v_active = 2'b10,
             v_frontporch = 2'b11
     } v_mode; 
-
-
-
-
-
-
-
-
 
 
     h_mode h_current_state, h_next_state;
