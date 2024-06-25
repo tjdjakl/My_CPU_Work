@@ -2,40 +2,7 @@
 //      VGA Output Module, outputs to VGA and send information to monitor
 //
 
-////////////////////////////////////////////////////////////////////////////////////////////////
-//                                                                                            //
-//   MESS WITH THE X_COORD & OFFSET VALUES TO GET A PICTURE TO GO ACROSS THE ENTIRE SCREEN    //
-//                                                                                            //
-////////////////////////////////////////////////////////////////////////////////////////////////
 
-// x_coord changes every two values (will lose two pixel data points on end bit it should be fine)
-// mess with the v_count index for v_offset so that it changes every 5 lines instead of every line
-
-////////////////////////////////////////////////////////////////////////////////////////////////
-//                                                                                            //
-//  ADD IN A PLACEHOLDER REG FILE SO THAT NEW PIXEL DATA IS ON STANDBY AND NO TIMING MISHAP   //
-//                                                                                            //
-////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-//When x_coord == 5'b11111 , thats when we want to fetch the next register from SRAM and store it in a temp local register that can be called directly after x_coord == 0
-//
-// [31:0] current_word
-// [31:0] next_word
-//
-//
-// if (word_address_offset == 0) begin
-//      word_address_dest = word_address_base + {23'b0, word_address_offset};
-//      if (~SRAM_busy)
-//          next_word = SRAM_data_in
-//
-// else if ((x_coord == 5'b11111) & (word_address_offset < #MAXOFFSET#)) begin
-//      word_address_dest = word_address_base + {23'b0, word_address_offset} + 1;
-//      if (~SRAM_busy)
-//          next_word = SRAM_data_in
-//
-// if (x_coord == 5'b0) begin
-//      current_word = next_word
 
 module VGA_out(
     input logic [31:0] SRAM_data_in,
@@ -65,6 +32,7 @@ module VGA_out(
     logic [8:0] h_offset; // h count math for appropriate word address offset
     logic [8:0] v_offset; // v count math for appropriate word address offset
     logic [4:0] x_coord; // address for the 32 bit of information received from SRAM
+    logic [31:0] current_word, next_word; // used for calling the next line of info from SRAM and having it on standby
     
     //assign word_address_base = 32'h3E80; // Word address base for the actual SRAM
     assign word_address_base = 32'h0; // Word address base for test benching purposes
@@ -114,7 +82,7 @@ module VGA_out(
 
         // Changes the VGA_State signal to notify 'Request Handler' the current active state of the VGA
     always_comb begin
-        if ((v_current_state == v_active) & (v_count < 96)) begin
+        if ((v_current_state == v_active) & (v_count < 384)) begin
             VGA_state = 2'b10;
         end else if ((v_current_state == v_backporch) & (v_count == 9'd32)) begin
             VGA_state = 2'b01;
@@ -251,8 +219,8 @@ module VGA_out(
 
 
     // IF BOTH STATES ARE ACTIVE AND THE COUNT IS WITHIN OUR DISPLAY DIMENSIONS, DATA TRANSACTION IS ENABLED
-    always_comb begin
-        if ((h_current_state == h_active) & (v_current_state == v_active) & (h_count < 128) & (v_count < 96)) begin
+    always_comb begin                                                       // 256 for 2 pixels ber pit, 384 for 4 lines before new data
+        if ((h_current_state == h_active) & (v_current_state == v_active) & (h_count < 256) & (v_count < 384)) begin
             data_en = 1;
         end else begin
             data_en = 0;
@@ -267,23 +235,15 @@ module VGA_out(
     always_comb begin
     ////////////////////////////////////POTENTIAL FOR ADDING AN ENABLE HERE TO OPTIMIZE/////////////////////////////////////////
         h_offset = {7'b0, h_count[6:5]};  // sets h offset to hcount up until 32
-        v_offset = 7'd4 * v_count[6:0];            // sets v offset to vcount * 4
+        v_offset = 7'd4 * v_count[8:2];            // sets v offset to vcount * 4 // [8:2] accounts for after 4 lines we get a new offset of info
         word_address_offset = h_offset + v_offset; // sets word offset to the total of h and v offsets
     end
-    
-    
-
-    //sets up the destination address in SRAM that we want to read from 
-    always_comb begin
-        word_address_dest = word_address_base + {23'b0, word_address_offset};       
-   end
-
 
 
     // setting up X coordinate logic for reading from our SRAM Bytes
     // the first 5 bits just loop after every multiple of 32
     //assign x_coord = h_count[4:0]; // READING FROM RIGHT TO LEFT
-    assign x_coord = 5'b11111 - h_count[4:0]; // READING FROM LEFT TO RIGHT
+    assign x_coord = 5'b11111 - h_count[5:1]; // READING FROM LEFT TO RIGHT, every 2 pixel, next bit
 
 
     // Correct Pixel data only sends if enable and ~busy flag are toggled
@@ -294,6 +254,40 @@ module VGA_out(
             pixel_data = 0;
         end
     end
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+//                                                                                            //
+//  ADD IN A PLACEHOLDER REG FILE SO THAT NEW PIXEL DATA IS ON STANDBY AND NO TIMING MISHAP   //
+//                                                                                            //
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+//When x_coord == 5'b11111 , thats when we want to fetch the next register from SRAM and store it in a temp local register that can be called directly after x_coord == 0
+//
+
+
+    always_comb begin
+        if (word_address_offset == 0) begin
+            word_address_dest = word_address_base + {23'b0, word_address_offset};
+            if (~SRAM_busy) begin
+                next_word = SRAM_data_in;
+            end
+
+        end else if ((x_coord == 5'b11111) & (word_address_offset < 9'h180)) begin
+            word_address_dest = word_address_base + {23'b0, word_address_offset} + 1;
+            if (~SRAM_busy) begin
+                next_word = SRAM_data_in;
+            end
+
+        end else if (x_coord == 5'b0) begin
+            current_word = next_word;
+        end else begin
+            current_word = current_word;
+            next_word = next_word;
+        end
+    end
+
+
 
 
 
