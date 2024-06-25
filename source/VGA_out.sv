@@ -17,6 +17,7 @@ module VGA_out(
     //OUTPUTS ONLY FOR TEST BENCHING
     output logic [9:0] h_count,
     output logic [8:0] v_count,
+    
     output logic [1:0] h_state, // can be eliminated after test benching
     output logic [1:0] v_state // can be eliminated after tesbenching
 );
@@ -217,6 +218,14 @@ module VGA_out(
     // WE CAN WORRY ABOUT HOW WE ARE GOING TO WORK WITH OUR TIMING TO MAKE SURE THAT OUR DATA BIT COMES WHEN WE WANT IT TO //
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    // Correct Pixel data only sends if enable and ~busy flag are toggled
+    always_comb begin
+        if (~SRAM_busy & data_en) begin
+            pixel_data = SRAM_data_in[x_coord];
+        end else begin
+            pixel_data = 0;
+        end
+    end
 
     // IF BOTH STATES ARE ACTIVE AND THE COUNT IS WITHIN OUR DISPLAY DIMENSIONS, DATA TRANSACTION IS ENABLED
     always_comb begin                                                       // 256 for 2 pixels ber pit, 384 for 4 lines before new data
@@ -239,6 +248,7 @@ module VGA_out(
         word_address_offset = h_offset + v_offset; // sets word offset to the total of h and v offsets
     end
 
+    assign word_address_dest = word_address_base + {23'b0, word_address_offset}; 
 
     // setting up X coordinate logic for reading from our SRAM Bytes
     // the first 5 bits just loop after every multiple of 32
@@ -246,14 +256,7 @@ module VGA_out(
     assign x_coord = 5'b11111 - h_count[5:1]; // READING FROM LEFT TO RIGHT, every 2 pixel, next bit
 
 
-    // Correct Pixel data only sends if enable and ~busy flag are toggled
-    always_comb begin
-        if (~SRAM_busy & data_en) begin
-            pixel_data = SRAM_data_in[x_coord];
-        end else begin
-            pixel_data = 0;
-        end
-    end
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 //                                                                                            //
@@ -266,24 +269,79 @@ module VGA_out(
 //
 
 
+
+        
+
+/*
     always_comb begin
-        if (word_address_offset == 0) begin
-            word_address_dest = word_address_base + {23'b0, word_address_offset};
-            if (~SRAM_busy) begin
-                next_word = SRAM_data_in;
-            end
+        if (x_coord > 0) begin // starting bit of word
+            next_word = SRAM_data_in;
+        end else begin
+            next_word = next_word;
+        end
+    end
 
-        end else if ((x_coord == 5'b11111) & (word_address_offset < 9'h180)) begin
-            word_address_dest = word_address_base + {23'b0, word_address_offset} + 1;
-            if (~SRAM_busy) begin
-                next_word = SRAM_data_in;
-            end
-
-        end else if (x_coord == 5'b0) begin
+    always_comb begin
+        
+        if (x_coord == 0) begin
             current_word = next_word;
         end else begin
             current_word = current_word;
-            next_word = next_word;
+        end
+        
+    end
+
+    */
+
+
+
+    
+
+/*
+    logic [31:0] register_old; // current word
+    logic [31:0] register_new; // next word
+    logic output_bit;
+    logic load_new;
+
+    typedef enum logic [1:0] {
+        IDLE,
+        OUTPUT_BITS,
+        LOAD_NEW_REGISTER
+    } data_swap;
+
+    data_swap state;
+
+    always_ff @(posedge clk or negedge nrst) begin
+        if (~nrst) begin
+            state <= IDLE;
+            load_new <= 0;
+        end else begin
+            case (state)
+                IDLE: begin
+                    register_old <= SRAM_data_in;
+                    state <= OUTPUT_BITS;
+                end
+
+                OUTPUT_BITS: begin
+                    output_bit <= register_old[x_coord];
+                    register_new <= SRAM_data_in;
+
+                    if (x_coord == 0) begin
+                        load_new <= 1;
+                        state <= LOAD_NEW_REGISTER;
+                    end 
+                end
+
+                LOAD_NEW_REGISTER: begin
+                    if (load_new) begin
+                        register_old <= register_new;
+                        load_new <= 0;
+                        state <= OUTPUT_BITS;
+                    end
+                end
+
+                default: state <= IDLE;
+            endcase
         end
     end
 
@@ -291,4 +349,5 @@ module VGA_out(
 
 
 
+*/
 endmodule
