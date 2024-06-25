@@ -351,3 +351,12 @@ module VGA_out(
 
 */
 endmodule
+
+
+
+module VGA_data_controller (
+
+);
+
+
+endmodule
