@@ -169,7 +169,7 @@ module tb_VGA_data_controller();
 );
 
     // Connecting wires to external memory 
-    assign tb_h_count = 0;
+
 
     // Clock generation block
     always begin
