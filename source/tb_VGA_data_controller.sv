@@ -228,7 +228,7 @@ module tb_VGA_data_controller();
 
         //TESTING FOR VGA state = 0
         for (i=0; i<96; i++) begin
-            if (i[1:0] == 2'b11) begin
+            if (i[5:0] == 6'b111111) begin
                 tb_VGA_request_address++;
             end
             tb_VGA_state = 0;
@@ -242,7 +242,7 @@ module tb_VGA_data_controller();
         
         //TESTING FOR VGA state = 1
         for (i=0; i<48; i++) begin
-            if (i[4:0] == 5'b11111) begin
+            if (i[5:0] == 6'b111111) begin
                 tb_VGA_request_address++;
             end
             tb_VGA_state = 1;
@@ -256,7 +256,7 @@ module tb_VGA_data_controller();
         tb_VGA_state = 2;
         //TESTING FOR VGA state = 1, ACTIVE STATE
         for (i=0; i<640; i++) begin
-            if (i[4:0] == 5'b11111) begin
+            if (i[5:0] == 6'b111111) begin
                 tb_VGA_request_address++;
             end
 
