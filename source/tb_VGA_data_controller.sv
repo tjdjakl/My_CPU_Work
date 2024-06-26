@@ -81,7 +81,7 @@ module tb_VGA_data_controller();
         end
     end
 
-    assign tb_data_from_SRAM = memory[tb_SRAM_address[8:0]];
+    assign tb_data_to_VGA = memory[tb_VGA_request_address[8:0]];
     ////////////////////////
     // Testbenching tasks //
     ////////////////////////
@@ -167,6 +167,9 @@ module tb_VGA_data_controller();
     .data_to_VGA(tb_data_to_VGA), 
     .SRAM_address(tb_SRAM_address)
 );
+
+    assign tb_data_en = 1;
+    assign tb_byte_select_in = 4'b1111;
 
     // Connecting wires to external memory 
 
