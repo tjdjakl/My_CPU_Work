@@ -235,7 +235,7 @@ module tb_VGA_data_controller();
         
         //TESTING FOR VGA state = 1
         for (i=0; i<48; i++) begin
-            tb_VGA_state = 0;
+            tb_VGA_state = 1;
             @(posedge tb_clk);
        
         end
