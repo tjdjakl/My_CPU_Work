@@ -56,7 +56,7 @@ module tb_VGA_data_controller();
     logic [31:0] tb_data_to_VGA, tb_SRAM_address;
 
     // Expected values for checks
-
+    assign tb_data_from_SRAM = memory[tb_SRAM_address[8:0]];
 
     // Signal Dump
     initial begin
@@ -69,12 +69,14 @@ module tb_VGA_data_controller();
 
     initial begin
         for (i = 0; i < 384; i = i + 1) begin
-            if (i==5) begin
-                memory[i] = 32'h3FFFFFFC;
+            if ((i & 32'b11) == 1) begin
+                memory[i] = 32'hFFFFFFFF;
             end else if ((i & 32'b11) == 0) begin
-                memory[i] = 32'h02468ACF;
+                memory[i] = 32'h00000000;
+            end else if ((i & 32'b11) == 2) begin
+            memory[i] = 32'h6AAA5556;
             end else begin
-                memory[i] = 32'hF000000F;
+                memory[i] = 32'hA666666A;
             end
         end
     end
@@ -98,6 +100,7 @@ module tb_VGA_data_controller();
 
         // Deactivate reset
         tb_nrst = RESET_INACTIVE; 
+        tb_h_count = 0;
     end
     endtask
 
@@ -166,13 +169,14 @@ module tb_VGA_data_controller();
 );
 
     // Connecting wires to external memory 
-
+    assign tb_h_count = 0;
 
     // Clock generation block
     always begin
         tb_clk = 0; // set clock initially to be 0 so that they are no time violations at the rising edge 
         #(CLK_PERIOD / 2);
         tb_clk = 1;
+        tb_h_count++;      // INC  our H_count on each clock cycle
         #(CLK_PERIOD / 2);
     end
 
@@ -209,7 +213,7 @@ module tb_VGA_data_controller();
         // Check outputs again
       
         //////////////////////////////////////////////////
-        // Test 1: Test H State Change after SYNC count //
+        // Test 1: VGA State = 0                        //
         //////////////////////////////////////////////////
 
         tb_test_num += 1; 
@@ -218,25 +222,29 @@ module tb_VGA_data_controller();
 
 
 
-        //TESTING FOR H SYNC STATE
+        //TESTING FOR VGA state = 0
         for (i=0; i<96; i++) begin
-
+            tb_VGA_state = 0;
             @(posedge tb_clk);
-        
         end
+
+        reset_dut();
+
 
         @(posedge tb_clk);
         
-        //TESTING FOR H FRONTPORCH STATE
+        //TESTING FOR VGA state = 1
         for (i=0; i<48; i++) begin
-
+            tb_VGA_state = 0;
             @(posedge tb_clk);
        
         end
 
         @(posedge tb_clk);
+        reset_dut();
       
-        //TESTING FOR H ACTIVE STATE
+        tb_VGA_state = 2;
+        //TESTING FOR VGA state = 1, ACTIVE STATE
         for (i=0; i<640; i++) begin
 
             @(posedge tb_clk);
@@ -245,72 +253,72 @@ module tb_VGA_data_controller();
 
         @(posedge tb_clk);
        
-        //TESTING FOR H BACKPORCH STATE
-        for (i=0; i<16; i++) begin
+    //     //TESTING FOR H BACKPORCH STATE
+    //     for (i=0; i<16; i++) begin
 
-            @(posedge tb_clk);
+    //         @(posedge tb_clk);
         
-        end
+    //     end
 
-        @(posedge tb_clk);
+    //     @(posedge tb_clk);
        
 
-        //////////////////////////////////////////////////
-        // Test 2: Test V State Change after SYNC count //
-        //////////////////////////////////////////////////
+    //     //////////////////////////////////////////////////
+    //     // Test 2: Test V State Change after SYNC count //
+    //     //////////////////////////////////////////////////
 
         
 
-        // TESTING FOR V SYNC STATE
-        for (j=1; j<2; j++) begin
-            for (i=0; i<800; i++) begin @(posedge tb_clk); end // Clock cycles to produce a horizontal line
-       end
+    //     // TESTING FOR V SYNC STATE
+    //     for (j=1; j<2; j++) begin
+    //         for (i=0; i<800; i++) begin @(posedge tb_clk); end // Clock cycles to produce a horizontal line
+    //    end
 
-        @(posedge tb_clk);
+    //     @(posedge tb_clk);
      
-        // TESTING FOR V FRONTPORCH STATE
-        for (j=0; j<33; j++) begin
-            for (i=0; i<800; i++) begin @(posedge tb_clk); end // Clock cycles to produce a horizontal line
-        end
+    //     // TESTING FOR V FRONTPORCH STATE
+    //     for (j=0; j<33; j++) begin
+    //         for (i=0; i<800; i++) begin @(posedge tb_clk); end // Clock cycles to produce a horizontal line
+    //     end
 
-        @(posedge tb_clk);
+    //     @(posedge tb_clk);
       
         
-        //////////////////////////////////////////////////
-        // Test 3: Test for accurate pixel data output  //
-        //////////////////////////////////////////////////
+    //     //////////////////////////////////////////////////
+    //     // Test 3: Test for accurate pixel data output  //
+    //     //////////////////////////////////////////////////
 
 
-        // TESTING FOR V ACTIVE STATE
-        for (j=1; j<480; j++) begin
-            for (i=0; i<800; i++) begin @(posedge tb_clk); end // Clock cycles to produce a horizontal line
-               if (i<144) begin
-                end else if (i<784) begin
-                end else begin
-                end
-        end
+    //     // TESTING FOR V ACTIVE STATE
+    //     for (j=1; j<480; j++) begin
+    //         for (i=0; i<800; i++) begin @(posedge tb_clk); end // Clock cycles to produce a horizontal line
+    //            if (i<144) begin
+    //             end else if (i<784) begin
+    //             end else begin
+    //             end
+    //     end
         
 
-        @(posedge tb_clk);
-         // TESTING FOR V BACKPORCH STATE
-        for (j=1; j<10; j++) begin
-            for (i=0; i<800; i++) begin @(posedge tb_clk); end // Clock cycles to produce a horizontal line
-        end
+    //     @(posedge tb_clk);
+    //      // TESTING FOR V BACKPORCH STATE
+    //     for (j=1; j<10; j++) begin
+    //         for (i=0; i<800; i++) begin @(posedge tb_clk); end // Clock cycles to produce a horizontal line
+    //     end
 
-        @(posedge tb_clk);
+    //     @(posedge tb_clk);
         
-        for (i = 0; i < 384; i = i + 1) begin
-            if (i==5) begin
-                memory[i] = 32'hFFFFFFFF;
-            end else if (i < 52) begin
-                memory[i] = 32'h0;
-            end else begin
-                memory[i] = 32'hFFFFFFFF;
-            end
-        end
+    //     for (i = 0; i < 384; i = i + 1) begin
+    //         if (i==5) begin
+    //             memory[i] = 32'hFFFFFFFF;
+    //         end else if (i < 52) begin
+    //             memory[i] = 32'h0;
+    //         end else begin
+    //             memory[i] = 32'hFFFFFFFF;
+    //         end
+    //     end
         
 
-        for (i=0; i<512000; i++) begin @(posedge tb_clk); end // Clock cycles to produce a horizontal line
+    //     for (i=0; i<512000; i++) begin @(posedge tb_clk); end // Clock cycles to produce a horizontal line
 
         $finish;
     end

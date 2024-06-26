@@ -46,7 +46,8 @@ module VGA_data_controller (
 
                 PREPARE_DATA: begin
                     if (VGA_state == 1) begin // preparing first word 
-                        SRAM_address <= 32'h3E80; // base of SRAM storage
+                      //SRAM_address <= 32'h3E80; // base of SRAM storage
+                        SRAM_address <= 32'h0; // TESTBENCH CASE
                         data_to_VGA <= data_from_SRAM;
                         state <= LOAD_NEW_REGISTER;
                     end
