@@ -81,7 +81,7 @@ module tb_VGA_data_controller();
         end
     end
 
-    assign tb_data_to_VGA = memory[tb_VGA_request_address[8:0]];
+    assign tb_data_from_SRAM = memory[tb_VGA_request_address[8:0]];
     ////////////////////////
     // Testbenching tasks //
     ////////////////////////
@@ -101,6 +101,7 @@ module tb_VGA_data_controller();
         // Deactivate reset
         tb_nrst = RESET_INACTIVE; 
         tb_h_count = 0;
+        tb_VGA_request_address = 0;
     end
     endtask
 
@@ -227,6 +228,9 @@ module tb_VGA_data_controller();
 
         //TESTING FOR VGA state = 0
         for (i=0; i<96; i++) begin
+            if (i[1:0] == 2'b11) begin
+                tb_VGA_request_address++;
+            end
             tb_VGA_state = 0;
             @(posedge tb_clk);
         end
@@ -238,6 +242,9 @@ module tb_VGA_data_controller();
         
         //TESTING FOR VGA state = 1
         for (i=0; i<48; i++) begin
+            if (i[1:0] == 2'b11) begin
+                tb_VGA_request_address++;
+            end
             tb_VGA_state = 1;
             @(posedge tb_clk);
        
@@ -249,6 +256,9 @@ module tb_VGA_data_controller();
         tb_VGA_state = 2;
         //TESTING FOR VGA state = 1, ACTIVE STATE
         for (i=0; i<640; i++) begin
+            if (i[1:0] == 2'b11) begin
+                tb_VGA_request_address++;
+            end
 
             @(posedge tb_clk);
        
