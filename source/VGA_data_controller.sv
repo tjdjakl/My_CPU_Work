@@ -52,7 +52,7 @@ module VGA_data_controller (
                         state <= LOAD_NEW_REGISTER;
                     end
                     
-                    else if (h_count == 62) begin
+                    else if (h_count[5:0] == 62) begin
                         state <= LOAD_NEW_REGISTER;
                     end else begin
                         SRAM_address <= VGA_request_address + 1; // preparing next word 
