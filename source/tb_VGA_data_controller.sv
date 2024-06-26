@@ -56,7 +56,7 @@ module tb_VGA_data_controller();
     logic [31:0] tb_data_to_VGA, tb_SRAM_address;
 
     // Expected values for checks
-    assign tb_data_from_SRAM = memory[tb_SRAM_address[8:0]];
+
 
     // Signal Dump
     initial begin
@@ -81,7 +81,7 @@ module tb_VGA_data_controller();
         end
     end
 
-
+    assign tb_data_from_SRAM = memory[tb_SRAM_address[8:0]];
     ////////////////////////
     // Testbenching tasks //
     ////////////////////////
