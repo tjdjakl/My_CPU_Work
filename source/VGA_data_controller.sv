@@ -1,4 +1,7 @@
 
+/////////////////////////////////
+//     Integrate with VGA to see if we need to make the push count 63 instead of 62
+
 
 module VGA_data_controller (
     input logic clk, nrst,
